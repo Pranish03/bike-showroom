@@ -6,9 +6,9 @@ import { AppLayout } from "./components/AppLayout";
 import { Home } from "./pages/home/index";
 import { Bikes } from "./pages/bikes/index";
 import { Contact } from "./pages/contact/index";
-
-import { Login } from "./pages/login";
-import { Signup } from "./pages/signup";
+import { Bike } from "./pages/bike/index";
+import { Login } from "./pages/login/index";
+import { Signup } from "./pages/signup/index";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -18,6 +18,7 @@ createRoot(document.getElementById("root")).render(
           <Route index element={<Home />} />
           <Route path="/bikes" element={<Bikes />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/bike/:id" element={<Bike />} />
         </Route>
 
         <Route path="/login" element={<Login />} />

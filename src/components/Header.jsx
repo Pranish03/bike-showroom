@@ -17,7 +17,7 @@ export const Header = () => {
       <div className="text-lg flex items-center gap-7">
         <Link to="/login">Login</Link>
 
-        <Link to="/login">
+        <Link to="/signup">
           <Button>Signup</Button>
         </Link>
       </div>
