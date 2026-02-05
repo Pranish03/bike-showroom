@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
 import { Link } from "react-router-dom";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 export const Signup = () => {
   const [formValue, setFormValue] = useState({
@@ -11,6 +12,12 @@ export const Signup = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
+      <div className="absolute top-10 left-10 text-lg">
+        <Link to="/" className="flex items-center gap-1">
+          <IoIosArrowRoundBack size={34} />
+          <span className="hover:underline">Back to home</span>
+        </Link>
+      </div>
       <div className="w-[400px]">
         <h1 className="text-4xl mb-3 font-bold text-center">Signup</h1>
         <p className="text-center text-lg mb-8">Create a new account</p>
