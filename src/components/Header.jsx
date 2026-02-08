@@ -8,7 +8,7 @@ export const Header = () => {
       <div className="text-4xl font-bold w-43.75">
         <Link to="/">BIKE</Link>
       </div>
-      <nav className="text-lg min-w-[20%] flex justify-between items-center">
+      <nav className="text-lg min-w-[30%] flex justify-between items-center">
         <Link to="/">Home</Link>
         <Link to="/Admin">Admin</Link>
         <Link to="/bikes">Bikes</Link>
