@@ -2,7 +2,7 @@ export const Card = ({ image }) => {
   return (
     <div>
       <img
-        className="w-full aspect-video rounded-xl mb-3"
+        className="w-full h-60 object-cover rounded-xl mb-3"
         src={image.src}
         alt=""
       />

@@ -13,11 +13,11 @@ export const Login = () => {
     <div className="min-h-screen flex items-center justify-center">
       <div className="absolute top-10 left-10 text-lg">
         <Link to="/" className="flex items-center gap-1">
-          <IoIosArrowRoundBack size={34} />
+          <IoIosArrowRoundBack size={30} />
           <span className="hover:underline">Back to home</span>
         </Link>
       </div>
-      <div className="w-[400px]">
+      <div className="w-100">
         <h1 className="text-4xl mb-3 font-bold text-center">Login</h1>
         <p className="text-center text-lg mb-8">Login to existing account</p>
 
@@ -35,7 +35,7 @@ export const Login = () => {
             <input
               id="email"
               type="email"
-              placeholder="johndoe@gmail.com"
+              placeholder="Enter your email"
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formValue.email}
               onChange={(e) =>
@@ -53,7 +53,7 @@ export const Login = () => {
             <input
               id="password"
               type="password"
-              placeholder="********"
+              placeholder="Enter your password"
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formValue.password}
               onChange={(e) =>
@@ -64,7 +64,9 @@ export const Login = () => {
             />
           </div>
 
-          <Button className={"w-full"}>Login</Button>
+          <Button className="bg-green-600 hover:bg-green-700 w-full">
+            Login
+          </Button>
         </form>
 
         <div className="mt-4 text-center text-base">

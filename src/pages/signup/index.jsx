@@ -14,11 +14,11 @@ export const Signup = () => {
     <div className="min-h-screen flex items-center justify-center">
       <div className="absolute top-10 left-10 text-lg">
         <Link to="/" className="flex items-center gap-1">
-          <IoIosArrowRoundBack size={34} />
+          <IoIosArrowRoundBack size={30} />
           <span className="hover:underline">Back to home</span>
         </Link>
       </div>
-      <div className="w-[400px]">
+      <div className="w-100">
         <h1 className="text-4xl mb-3 font-bold text-center">Signup</h1>
         <p className="text-center text-lg mb-8">Create a new account</p>
 
@@ -35,8 +35,8 @@ export const Signup = () => {
             </label>
             <input
               id="username"
-              type="username"
-              placeholder="johndoe"
+              type="text"
+              placeholder="Enter a username"
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formValue.username}
               onChange={(e) =>
@@ -54,7 +54,7 @@ export const Signup = () => {
             <input
               id="email"
               type="email"
-              placeholder="johndoe@gmail.com"
+              placeholder="Enter an email"
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formValue.email}
               onChange={(e) =>
@@ -72,7 +72,7 @@ export const Signup = () => {
             <input
               id="password"
               type="password"
-              placeholder="********"
+              placeholder="Enter a password"
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               value={formValue.password}
               onChange={(e) =>
@@ -83,7 +83,9 @@ export const Signup = () => {
             />
           </div>
 
-          <Button className={"w-full"}>Signup</Button>
+          <Button className="bg-green-600 hover:bg-green-700 w-full">
+            Signup
+          </Button>
         </form>
 
         <div className="mt-4 text-center text-base">

@@ -3,8 +3,8 @@ import { Card } from "../../components/Card";
 import { Link } from "react-router-dom";
 
 const images = [
-  { id: 1, src: "/bike1.png" },
-  { id: 2, src: "/bike2.png" },
+  { id: 1, src: "/bike-1.jpg" },
+  { id: 2, src: "/bike-2.jpg" },
 ];
 
 export const Home = () => {
