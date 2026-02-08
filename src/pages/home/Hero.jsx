@@ -12,7 +12,7 @@ export const Hero = () => {
           pure adrenaline. Built for riders who demand more from every mile.
         </p>
         <Link to="/bikes">
-          <Button className={"flex items-center gap-1"}>
+          <Button className="flex items-center gap-1 bg-green-600 hover:bg-green-700">
             Explore More
             <IoIosArrowRoundForward size={34} />
           </Button>
