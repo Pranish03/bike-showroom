@@ -4,12 +4,13 @@ import { FiUser } from "react-icons/fi";
 
 export const Header = () => {
   return (
-    <header className="flex justify-between items-center w-[1200px] mx-auto py-4">
-      <div className="text-4xl font-bold w-[175px]">
+    <header className="flex justify-between items-center w-300 mx-auto py-4">
+      <div className="text-4xl font-bold w-43.75">
         <Link to="/">BIKE</Link>
       </div>
       <nav className="text-lg min-w-[20%] flex justify-between items-center">
         <Link to="/">Home</Link>
+        <Link to="/Admin">Admin</Link>
         <Link to="/bikes">Bikes</Link>
         <Link to="/contact">Contact</Link>
       </nav>

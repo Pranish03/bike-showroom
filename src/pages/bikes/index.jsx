@@ -14,7 +14,7 @@ export const Bikes = () => {
       <h2 className="text-3xl font-bold text-center my-10">Bikes</h2>
       <div className="grid grid-cols-3 gap-x-8 gap-y-12 mb-20">
         {images.map((img) => (
-          <Link key={img.id} to={`bike/${img.id}`}>
+          <Link key={img.id} to={`/bike/${img.id}`}>
             <Card image={img} id={img.id} />
           </Link>
         ))}
