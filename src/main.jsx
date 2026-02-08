@@ -9,6 +9,7 @@ import { Contact } from "./pages/contact/index";
 import { Bike } from "./pages/bike/index";
 import { Login } from "./pages/login/index";
 import { Signup } from "./pages/signup/index";
+import { Admin } from "./pages/admin";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/bikes" element={<Bikes />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/bike/:id" element={<Bike />} />
+          <Route path="/admin" element={<Admin />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
