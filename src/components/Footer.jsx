@@ -4,12 +4,12 @@ import { Button } from "./Button";
 export const Footer = () => {
   return (
     <footer className="bg-black/95">
-      <div className="w-[1200px] mx-auto py-10 flex justify-between text-white/90 border-b border-white/20">
+      <div className="min-w-300 mx-auto py-10 flex justify-between text-white/90 border-b border-white/20">
         <div className="text-lg">
           <h4 className="text-xl mb-2 font-medium">
             Built for riders. Engineered for performance.
           </h4>
-          <p className="w-[500px] text-white/50 text-base">
+          <p className="w-125 text-white/50 text-base">
             We design and deliver high-quality bikes that combine power,
             comfort, and cutting-edge technology —made for every kind of
             ride.future
@@ -38,7 +38,9 @@ export const Footer = () => {
               placeholder="Enter email address"
               className="w-full rounded-md border bg-white border-white px-3 py-2 placeholder:text-black/50 text-black/80 focus:outline-none"
             />
-            <Button>Subscribe</Button>
+            <Button className="bg-green-600 hover:bg-green-700">
+              Subscribe
+            </Button>
           </div>
           <p className="text-white/50 text-base">
             Subscribe our newsletter and get updates.
