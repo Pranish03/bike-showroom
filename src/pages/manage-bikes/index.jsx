@@ -3,18 +3,20 @@ import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useFetch } from "../../hooks/use-fetch";
 
-const images = [
-  { id: 1, src: "/bike-1.jpg" },
-  { id: 2, src: "/bike-2.jpg" },
-  { id: 3, src: "/bike-3.jpg" },
-  { id: 4, src: "/bike-4.jpg" },
-];
-
 export const ManageBikes = () => {
-  const { data, isLoading } = useFetch("/auth/me");
-  if (isLoading) return "Loading";
-  console.log(data);
+  const { data, isLoading, error } = useFetch("/auth/me");
+  const {
+    data: bikeData,
+    isLoading: isBikeLoading,
+    error: bikeError,
+  } = useFetch("/bike");
+
+  if (isLoading || isBikeLoading) return "Loading";
+
+  if (error || bikeError) return error || bikeError || "Error Occurred";
+
   if (!data?.data?.isAdmin) return "Not authorized";
+
   return (
     <div className="max-w-300 mx-auto">
       <div className="flex justify-between items-center my-15">
@@ -36,13 +38,13 @@ export const ManageBikes = () => {
           </thead>
 
           <tbody>
-            {images.map((image) => (
-              <tr key={image.id} className="border-b border-black/40">
-                <td className="p-4">{image.id}</td>
-                <td className="p-4 font-medium">Thunderbolt Rider</td>
+            {bikeData?.bikes.map((bike, i) => (
+              <tr key={bike._id} className="border-b border-black/40">
+                <td className="p-4">{++i}</td>
+                <td className="p-4 font-medium">{bike.name}</td>
                 <td className="p-4">
                   <img
-                    src={image.src}
+                    src={`${import.meta.env.VITE_SERVER_URL}/${bike.image}`}
                     alt=""
                     className="w-20 h-14 object-cover rounded-md"
                   />
@@ -50,7 +52,7 @@ export const ManageBikes = () => {
 
                 <td className="p-4">
                   <div className="flex justify-end gap-3">
-                    <Link to={`/edit-bike/${image.id}`}>
+                    <Link to={`/edit-bike/${bike._id}`}>
                       <button className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg cursor-pointer">
                         <FiEdit2 size={18} />
                       </button>
