@@ -4,7 +4,7 @@ import { Button } from "./Button";
 export const Footer = () => {
   return (
     <footer className="bg-black/95">
-      <div className="min-w-300 mx-auto py-10 flex justify-between text-white/90 border-b border-white/20">
+      <div className="max-w-300 mx-auto py-10 flex justify-between text-white/90 border-b border-white/20">
         <div className="text-lg">
           <h4 className="text-xl mb-2 font-medium">
             Built for riders. Engineered for performance.
