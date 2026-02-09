@@ -8,7 +8,7 @@ export const Card = ({ image, name, desc, price }) => {
       />
       <h3 className="font-bold text-xl">{name}</h3>
       <p className="text-lg truncate">{desc}</p>
-      <span className="text-xl font-bold">{price}</span>
+      <span className="text-xl font-bold">Rs. {price}</span>
     </div>
   );
 };
