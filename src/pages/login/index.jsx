@@ -14,6 +14,10 @@ export const Login = () => {
   const onSubmit = async (e) => {
     try {
       e.preventDefault();
+
+      const formData = new FormData();
+      formData.append("email", formValue.email);
+
       const res = await axios.post("/auth/login", formValue);
       localStorage.setItem("auth-token", res.data.data.token);
       toast.success("Welcome");

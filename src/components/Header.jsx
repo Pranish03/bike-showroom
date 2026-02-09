@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "./Button";
+import { useFetch } from "../hooks/use-fetch";
 
 export const Header = () => {
+  const { data } = useFetch("/auth/me");
+
+  const isAdmin = data?.data?.isAdmin;
+
   return (
     <header className="flex justify-between items-center w-300 mx-auto py-4">
       <div className="text-4xl font-bold w-43.75">
@@ -10,7 +15,7 @@ export const Header = () => {
       <nav className="text-lg flex justify-between gap-10 items-center">
         <Link to="/">Home</Link>
         <Link to="/bikes">Bikes</Link>
-        <Link to="/manage-bikes">Manage bikes</Link>
+        {isAdmin && <Link to="/manage-bikes">Manage bikes</Link>}
         <Link to="/contact">Contact</Link>
       </nav>
 
