@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
+import { axios } from "../../lib/axios";
+import toast from "react-hot-toast";
 
 export const Contact = () => {
   const [formValue, setFormValue] = useState({
@@ -9,15 +11,34 @@ export const Contact = () => {
     message: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formValue);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async (e) => {
+    try {
+      e.preventDefault();
+
+      setIsLoading(true);
+      await axios.post("/contact", formValue);
+      toast.success("Thankyou for contacting!");
+
+      setFormValue({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.log(error.response.data.error);
+      toast.error("All fields are required");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="max-w-300 mx-auto">
       <h2 className="text-3xl font-bold text-center my-10">Contact Us</h2>
-      <form className="space-y-4 w-125 mx-auto mb-15" onSubmit={handleSubmit}>
+      <form className="space-y-4 w-125 mx-auto mb-15" onSubmit={onSubmit}>
         <div>
           <label htmlFor="name" className="text-lg block mb-1">
             Name
@@ -82,7 +103,12 @@ export const Contact = () => {
           />
         </div>
 
-        <Button className="bg-green-600 hover:bg-green-700 w-full">Send</Button>
+        <Button
+          className="bg-green-600 hover:bg-green-700 w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? "Sending..." : "Send"}
+        </Button>
       </form>
     </div>
   );
