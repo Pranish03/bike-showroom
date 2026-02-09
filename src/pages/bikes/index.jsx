@@ -20,8 +20,7 @@ export const Bikes = () => {
         {data?.bikes.map((bike) => (
           <Link key={bike._id} to={`/bike/${bike._id}`}>
             <Card
-              image={"http://localhost:3000/" + bike.image}
-              id={bike._id}
+              image={`${import.meta.env.VITE_SERVER_URL}/${bike.image}`}
               desc={bike.description}
               name={bike.name}
               price={bike.price}
