@@ -20,7 +20,8 @@ export const ManageBikes = () => {
       await axios.delete(`/bike/${id}`);
       toast.success("Bike deleted successfully");
     } catch (error) {
-      toast.error(error.response.data.error);
+      console.log(error);
+      toast.error("Delete failed");
     }
   };
 

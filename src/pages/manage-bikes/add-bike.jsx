@@ -44,7 +44,7 @@ export const AddBike = () => {
       navigate("/manage-bikes");
     } catch (error) {
       console.log(error.response.data.error);
-      toast.error(error.response.data.error);
+      toast.error("All fields are required");
     }
   };
 
