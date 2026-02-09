@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useFetch } from "../../hooks/use-fetch";
+import { axios } from "../../lib/axios";
+import toast from "react-hot-toast";
 
 export const ManageBikes = () => {
   const { data, isLoading, error } = useFetch("/auth/me");
@@ -10,6 +12,17 @@ export const ManageBikes = () => {
     isLoading: isBikeLoading,
     error: bikeError,
   } = useFetch("/bike");
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this bike?")) return;
+
+    try {
+      await axios.delete(`/bike/${id}`);
+      toast.success("Bike deleted successfully");
+    } catch (error) {
+      toast.error(error.response.data.error);
+    }
+  };
 
   if (isLoading || isBikeLoading) return "Loading";
 
@@ -57,7 +70,10 @@ export const ManageBikes = () => {
                         <FiEdit2 size={18} />
                       </button>
                     </Link>
-                    <button className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg cursor-pointer">
+                    <button
+                      onClick={() => handleDelete(bike._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg cursor-pointer"
+                    >
                       <FiTrash2 size={18} />
                     </button>
                   </div>
