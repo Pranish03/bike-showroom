@@ -1,14 +1,35 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { axios } from "../../lib/axios";
+import toast from "react-hot-toast";
 
 export const Signup = () => {
+  const navigate = useNavigate();
   const [formValue, setFormValue] = useState({
     username: "",
     email: "",
     password: "",
   });
+
+  const onSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const res = await axios.post("/auth/signup", formValue);
+      console.log(res);
+      toast.success("Welcome, please login now!");
+      setFormValue({
+        username: "",
+        email: "",
+        password: "",
+      });
+      navigate("/login");
+    } catch (error) {
+      console.log(error.response.data.error);
+      toast.error(error.response.data.error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -22,13 +43,7 @@ export const Signup = () => {
         <h1 className="text-4xl mb-3 font-bold text-center">Signup</h1>
         <p className="text-center text-lg mb-8">Create a new account</p>
 
-        <form
-          className="space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(formValue);
-          }}
-        >
+        <form className="space-y-4" onSubmit={onSubmit}>
           <div>
             <label htmlFor="username" className="text-lg block mb-1">
               Username

@@ -12,9 +12,11 @@ import { Signup } from "./pages/signup/index";
 import { ManageBikes } from "./pages/manage-bikes";
 import { AddBike } from "./pages/manage-bikes/add-bike";
 import { EditBike } from "./pages/manage-bikes/edit-bike";
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
+    <Toaster />
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>

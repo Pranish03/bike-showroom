@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { useFetch } from "../../hooks/use-fetch";
 
 const images = [
   { id: 1, src: "/bike-1.jpg" },
@@ -10,6 +11,10 @@ const images = [
 ];
 
 export const ManageBikes = () => {
+  const { data, isLoading } = useFetch("/auth/me");
+  if (isLoading) return "Loading";
+  console.log(data);
+  if (!data?.data?.isAdmin) return "Not authorized";
   return (
     <div className="max-w-300 mx-auto">
       <div className="flex justify-between items-center my-15">

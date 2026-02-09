@@ -1,13 +1,32 @@
 import { useState } from "react";
 import { Button } from "../../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { axios } from "../../lib/axios";
+import toast from "react-hot-toast";
 
 export const Login = () => {
   const [formValue, setFormValue] = useState({
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+  const onSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const res = await axios.post("/auth/login", formValue);
+      localStorage.setItem("auth-token", res.data.data.token);
+      toast.success("Welcome");
+      setFormValue({
+        email: "",
+        password: "",
+      });
+      navigate("/");
+    } catch (error) {
+      console.log(error.response.data.error);
+      toast.error(error.response.data.error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -21,13 +40,7 @@ export const Login = () => {
         <h1 className="text-4xl mb-3 font-bold text-center">Login</h1>
         <p className="text-center text-lg mb-8">Login to existing account</p>
 
-        <form
-          className="space-y-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(formValue);
-          }}
-        >
+        <form className="space-y-4" onSubmit={onSubmit}>
           <div>
             <label htmlFor="email" className="text-lg block mb-1">
               Email
