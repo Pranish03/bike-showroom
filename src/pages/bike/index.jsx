@@ -9,7 +9,7 @@ export const Bike = () => {
 
   if (isLoading) return "Loading...";
 
-  if (error) return error || "Error Occured";
+  if (error) return error || "Error Occurred";
 
   return (
     <div className="max-w-300 h-[calc(100vh-350px)] mx-auto flex items-center gap-12.5">
