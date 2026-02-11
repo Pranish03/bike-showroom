@@ -13,6 +13,7 @@ import { ManageBikes } from "./pages/manage-bikes";
 import { AddBike } from "./pages/manage-bikes/add-bike";
 import { EditBike } from "./pages/manage-bikes/edit-bike";
 import { Toaster } from "react-hot-toast";
+import { NotFound } from "./pages/not-found";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -20,6 +21,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
+          <Route path="*" element={<NotFound />} />
           <Route index element={<Home />} />
           <Route path="/bikes" element={<Bikes />} />
           <Route path="/manage-bikes" element={<ManageBikes />} />

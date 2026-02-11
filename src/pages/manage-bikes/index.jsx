@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { useFetch } from "../../hooks/use-fetch";
@@ -6,11 +6,10 @@ import { axios } from "../../lib/axios";
 import toast from "react-hot-toast";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
+import { NotAvailable } from "../../components/NotAvailable";
 
 export const ManageBikes = () => {
   const { data, isLoading, error } = useFetch("/auth/me");
-
-  const navigate = useNavigate();
 
   const {
     data: bikeData,
@@ -34,9 +33,9 @@ export const ManageBikes = () => {
 
   if (isLoading || isBikeLoading) return <Loading />;
 
-  if (error || bikeError) return <Error error={error || bikeError} />;
+  if (!data?.data?.isAdmin) return <NotAvailable />;
 
-  if (!data?.data?.isAdmin) navigate("/");
+  if (error || bikeError) return <Error error={error || bikeError} />;
 
   return (
     <div className="max-w-300 min-h-[calc(100dvh-425px)] mx-auto">
