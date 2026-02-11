@@ -38,7 +38,7 @@ export const ManageBikes = () => {
   if (error || bikeError) return <Error error={error || bikeError} />;
 
   return (
-    <div className="max-w-300 min-h-[calc(100dvh-425px)] mx-auto">
+    <div className="max-w-300 min-h-[calc(100dvh-421px)] mx-auto">
       <div className="flex justify-between items-center my-15">
         <h2 className="text-3xl font-bold">Manage Bikes</h2>
         <Link to="/add-bike">

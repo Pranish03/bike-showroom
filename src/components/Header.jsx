@@ -54,7 +54,7 @@ export const Header = () => {
             {showMenu && (
               <div className="absolute top-8 right-0 p-1 bg-white rounded-xl border border-gray-100 shadow-md">
                 <div className="flex justify-center mt-2 mb-1">
-                  <div className="size-10 rounded-full flex justify-center items-center bg-black/20 text-black/60">
+                  <div className="size-10 rounded-full flex justify-center items-center bg-black/10 text-black/60">
                     <FiUser size={24} />
                   </div>
                 </div>
