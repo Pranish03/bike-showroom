@@ -9,7 +9,7 @@ export const AddBike = () => {
   const [formValue, setFormValue] = useState({
     name: "",
     price: "",
-    companyName: "",
+    brand: "",
     image: null,
     description: "",
     details: "",
@@ -24,7 +24,7 @@ export const AddBike = () => {
       const formData = new FormData();
       formData.append("name", formValue.name);
       formData.append("price", formValue.price);
-      formData.append("companyName", formValue.companyName);
+      formData.append("brand", formValue.brand);
       formData.append("image", formValue.image);
       formData.append("description", formValue.description);
       formData.append("details", formValue.details);
@@ -36,7 +36,7 @@ export const AddBike = () => {
       setFormValue({
         name: "",
         price: "",
-        companyName: "",
+        brand: "",
         image: null,
         description: "",
         details: "",
@@ -95,17 +95,17 @@ export const AddBike = () => {
 
         <div className="flex items-center gap-10">
           <div className="flex-1">
-            <label htmlFor="company" className="text-lg block mb-1">
-              Company name
+            <label htmlFor="brand" className="text-lg block mb-1">
+              Brand name
             </label>
             <input
-              id="company"
+              id="brand"
               type="text"
-              placeholder="Enter company name"
+              placeholder="Enter brand name"
               className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.companyName}
+              value={formValue.brand}
               onChange={(e) =>
-                setFormValue((p) => ({ ...p, companyName: e.target.value }))
+                setFormValue((p) => ({ ...p, brand: e.target.value }))
               }
             />
           </div>
