@@ -4,6 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import toast from "react-hot-toast";
 import { axios } from "../../lib/axios";
+import { useFetch } from "../../hooks/use-fetch";
+import { Loading } from "../../components/Loading";
+import { NotAvailable } from "../../components/NotAvailable";
+import { Error } from "../../components/Error";
 
 export const AddBike = () => {
   const [formValue, setFormValue] = useState({
@@ -14,6 +18,12 @@ export const AddBike = () => {
     description: "",
     details: "",
   });
+
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useFetch("/auth/me");
 
   const navigate = useNavigate();
 
@@ -47,6 +57,12 @@ export const AddBike = () => {
       toast.error("All fields are required");
     }
   };
+
+  if (isUserLoading) return <Loading />;
+
+  if (!userData?.data?.isAdmin) return <NotAvailable />;
+
+  if (userError) return <Error error={userError} />;
 
   return (
     <div className="max-w-300 mx-auto">

@@ -5,6 +5,9 @@ import { useFetch } from "../../hooks/use-fetch";
 import { Button } from "../../components/Button";
 import { axios } from "../../lib/axios";
 import toast from "react-hot-toast";
+import { Loading } from "../../components/Loading";
+import { Error } from "../../components/Error";
+import { NotAvailable } from "../../components/NotAvailable";
 
 export const EditBike = () => {
   const [formValue, setFormValue] = useState({
@@ -20,22 +23,33 @@ export const EditBike = () => {
 
   const { id } = useParams();
 
-  const { data } = useFetch(`/bike/${id}`);
-  const bikeData = data?.bike;
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useFetch("/auth/me");
+
+  const {
+    data: bikeData,
+    isLoading: isBikeLoading,
+    error: bikeError,
+  } = useFetch(`/bike/${id}`);
+
+  const bike = bikeData?.bike;
 
   useEffect(() => {
-    if (!bikeData) return;
+    if (!bike) return;
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setFormValue({
-      name: bikeData.name,
-      price: bikeData.price,
-      brand: bikeData.brand,
+      name: bike.name,
+      price: bike.price,
+      brand: bike.brand,
       image: null,
-      description: bikeData.description,
-      details: bikeData.details,
+      description: bike.description,
+      details: bike.details,
     });
-  }, [bikeData]);
+  }, [bike]);
 
   const onSubmit = async (e) => {
     try {
@@ -59,6 +73,12 @@ export const EditBike = () => {
       toast.error(error.response.data.error);
     }
   };
+
+  if (isUserLoading || isBikeLoading) return <Loading />;
+
+  if (!userData?.data?.isAdmin) return <NotAvailable />;
+
+  if (userError || bikeError) return <Error error={userError || bikeError} />;
 
   return (
     <div className="max-w-300 mx-auto">

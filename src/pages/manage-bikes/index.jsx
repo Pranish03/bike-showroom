@@ -9,7 +9,11 @@ import { Error } from "../../components/Error";
 import { NotAvailable } from "../../components/NotAvailable";
 
 export const ManageBikes = () => {
-  const { data, isLoading, error } = useFetch("/auth/me");
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useFetch("/auth/me");
 
   const {
     data: bikeData,
@@ -31,11 +35,11 @@ export const ManageBikes = () => {
     }
   };
 
-  if (isLoading || isBikeLoading) return <Loading />;
+  if (isUserLoading || isBikeLoading) return <Loading />;
 
-  if (!data?.data?.isAdmin) return <NotAvailable />;
+  if (!userData?.data?.isAdmin) return <NotAvailable />;
 
-  if (error || bikeError) return <Error error={error || bikeError} />;
+  if (userError || bikeError) return <Error error={userError || bikeError} />;
 
   return (
     <div className="max-w-300 min-h-[calc(100dvh-421px)] mx-auto">
