@@ -1,15 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useFetch } from "../../hooks/use-fetch";
 import { Button } from "../../components/Button";
+import { Loading } from "../../components/Loading";
+import { Error } from "../../components/Error";
 
 export const Bike = () => {
   const { id } = useParams();
 
   const { data, isLoading, error } = useFetch(`/bike/${id}`);
 
-  if (isLoading) return "Loading...";
+  if (isLoading) return <Loading />;
 
-  if (error) return error || "Error Occurred";
+  if (error) return <Error error={error} />;
 
   return (
     <div className="max-w-300 h-[calc(100vh-350px)] mx-auto flex items-center gap-12.5">
