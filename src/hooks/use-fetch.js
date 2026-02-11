@@ -9,6 +9,7 @@ export const useFetch = (url) => {
   const fn = useCallback(async () => {
     try {
       setIsLoading(true);
+
       const data = await axios.get(url);
       setData(data.data);
     } catch (error) {
