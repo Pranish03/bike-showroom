@@ -9,6 +9,7 @@ export const ManageBikes = () => {
   const { data, isLoading, error } = useFetch("/auth/me");
   const {
     data: bikeData,
+    refetch: refetchBikes,
     isLoading: isBikeLoading,
     error: bikeError,
   } = useFetch("/bike");
@@ -19,6 +20,7 @@ export const ManageBikes = () => {
     try {
       await axios.delete(`/bike/${id}`);
       toast.success("Bike deleted successfully");
+      refetchBikes();
     } catch (error) {
       console.log(error);
       toast.error("Delete failed");

@@ -5,17 +5,18 @@ import toast from "react-hot-toast";
 import { axios } from "../lib/axios";
 
 export const Header = () => {
-  const { data } = useFetch("/auth/me");
+  const { data, refetch } = useFetch("/auth/me");
 
   const navigate = useNavigate();
 
   const isAdmin = data?.data?.isAdmin;
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("auth-token");
 
     delete axios.defaults.headers.common["Authorization"];
     toast.success("Logged out successfully");
+    await refetch();
     navigate("/");
   };
 
