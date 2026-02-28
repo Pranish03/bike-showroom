@@ -64,11 +64,11 @@ export const Login = () => {
               Email
             </label>
             <Input
-              error={errors?.email}
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="m@example.com"
               {...register("email")}
+              error={errors?.email}
             />
           </div>
 
@@ -77,15 +77,14 @@ export const Login = () => {
               Password
             </label>
             <Input
-              error={errors?.password}
               id="password"
               type="password"
-              placeholder="Enter your password"
               {...register("password")}
+              error={errors?.password}
             />
           </div>
 
-          {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+          {error && <p className="mt-1 text-base text-red-600">{error}</p>}
 
           <Button
             className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"

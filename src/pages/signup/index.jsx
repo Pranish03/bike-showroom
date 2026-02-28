@@ -1,33 +1,47 @@
 import { useState } from "react";
-import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { IoIosArrowRoundBack } from "react-icons/io";
-import { axios } from "../../lib/axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { ImSpinner8 } from "react-icons/im";
+import { SignupValidationSchema } from "../../schemas/authSchema";
+import { axios } from "../../lib/axios";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 
 export const Signup = () => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
-  const [formValue, setFormValue] = useState({
-    username: "",
-    email: "",
-    password: "",
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+    resolver: zodResolver(SignupValidationSchema),
   });
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (data) => {
     try {
-      e.preventDefault();
-      const res = await axios.post("/auth/signup", formValue);
-      console.log(res);
-      toast.success("Welcome, please login now!");
-      setFormValue({
-        username: "",
-        email: "",
-        password: "",
-      });
+      setLoading(true);
+
+      const res = await axios.post("/auth/signup", data);
+
+      toast.success(res?.data?.message);
+
       navigate("/login");
-    } catch (error) {
-      console.log(error.response.data.error);
-      toast.error(error.response.data.error);
+    } catch (err) {
+      setError(err?.response?.data?.error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,22 +57,17 @@ export const Signup = () => {
         <h1 className="text-4xl mb-3 font-bold text-center">Signup</h1>
         <p className="text-center text-lg mb-8">Create a new account</p>
 
-        <form className="space-y-4" onSubmit={onSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <label htmlFor="username" className="text-lg block mb-1">
-              Username
+            <label htmlFor="name" className="text-lg block mb-1">
+              Name
             </label>
-            <input
-              id="username"
+            <Input
+              id="name"
               type="text"
-              placeholder="Enter a username"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.username}
-              onChange={(e) =>
-                setFormValue((prev) => {
-                  return { ...prev, username: e.target.value };
-                })
-              }
+              placeholder="John Doe"
+              {...register("name")}
+              error={errors?.name}
             />
           </div>
 
@@ -66,17 +75,12 @@ export const Signup = () => {
             <label htmlFor="email" className="text-lg block mb-1">
               Email
             </label>
-            <input
+            <Input
               id="email"
               type="email"
-              placeholder="Enter an email"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.email}
-              onChange={(e) =>
-                setFormValue((prev) => {
-                  return { ...prev, email: e.target.value };
-                })
-              }
+              placeholder="m@example.com"
+              {...register("email")}
+              error={errors?.email}
             />
           </div>
 
@@ -84,21 +88,21 @@ export const Signup = () => {
             <label htmlFor="password" className="text-lg block mb-1">
               Password
             </label>
-            <input
+            <Input
               id="password"
               type="password"
-              placeholder="Enter a password"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.password}
-              onChange={(e) =>
-                setFormValue((prev) => {
-                  return { ...prev, password: e.target.value };
-                })
-              }
+              {...register("password")}
+              error={errors?.password}
             />
           </div>
 
-          <Button className="bg-green-600 hover:bg-green-700 w-full">
+          {error && <p className="mt-1 text-base text-red-600">{error}</p>}
+
+          <Button
+            className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
+            disabled={loading}
+          >
+            {loading && <ImSpinner8 className="animate-spin" />}
             Signup
           </Button>
         </form>

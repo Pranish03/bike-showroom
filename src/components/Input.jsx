@@ -14,7 +14,7 @@ export const Input = ({ className = "", error, ...props }) => {
         {...props}
       />
       {error && error.message && (
-        <p className="mt-1 text-sm text-red-600">{error.message}</p>
+        <p className="mt-1 text-base text-red-600">{error.message}</p>
       )}
     </div>
   );
