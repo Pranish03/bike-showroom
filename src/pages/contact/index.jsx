@@ -1,16 +1,16 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import { axios } from "../../lib/axios";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { contactValidationSchema } from "../../schemas/contactSchema";
 import { ImSpinner8 } from "react-icons/im";
+import { submitContactForm } from "../../api/contact";
 
 export const Contact = () => {
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -27,21 +27,19 @@ export const Contact = () => {
     resolver: zodResolver(contactValidationSchema),
   });
 
-  const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-
-      const res = await axios.post("/contact", data);
-
-      toast.success(res?.data?.message);
-
+  const mutation = useMutation({
+    mutationFn: submitContactForm,
+    onSuccess: (data) => {
+      toast.success(data.message);
       reset();
-    } catch (err) {
-      setError(err?.response?.data?.error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      setError("");
+    },
+    onError: (err) => {
+      setError(err?.response?.data?.error || "Something went wrong");
+    },
+  });
+
+  const onSubmit = (data) => mutation.mutate(data);
 
   return (
     <div className="max-w-300 mx-auto">
@@ -114,9 +112,9 @@ export const Contact = () => {
 
         <Button
           className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-          disabled={loading}
+          disabled={mutation.isPending}
         >
-          {loading && <ImSpinner8 className="animate-spin" />}
+          {mutation.isPending && <ImSpinner8 className="animate-spin" />}
           Send
         </Button>
       </form>
