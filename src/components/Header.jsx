@@ -24,6 +24,8 @@ export const Header = () => {
     navigate("/");
   };
 
+  console.log(data?.data);
+
   return (
     <header className="flex justify-between items-center w-300 mx-auto py-4">
       <div className="text-4xl font-bold w-43.75">
@@ -38,12 +40,12 @@ export const Header = () => {
 
       <div className="text-lg">
         {data?.data ? (
-          <div className="relative flex justify-end text-right w-[167px]">
+          <div className="relative flex justify-end text-right w-41.75">
             <div
               onClick={() => setShowMenu(!showMenu)}
               className="cursor-pointer max-w-min flex items-center gap-2 truncate"
             >
-              {data?.data?.username}
+              {data?.data?.name}
               {showMenu ? (
                 <FiChevronUp size={21} />
               ) : (

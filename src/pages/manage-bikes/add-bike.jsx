@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../../components/Button";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import toast from "react-hot-toast";
 import { axios } from "../../lib/axios";
@@ -8,55 +10,62 @@ import { useFetch } from "../../hooks/use-fetch";
 import { Loading } from "../../components/Loading";
 import { NotAvailable } from "../../components/NotAvailable";
 import { Error } from "../../components/Error";
+import { Input } from "../../components/Input";
+import { createBikeValidationSchema } from "../../schemas/bikeSchema";
+import { ImSpinner8 } from "react-icons/im";
 
 export const AddBike = () => {
-  const [formValue, setFormValue] = useState({
-    name: "",
-    price: "",
-    brand: "",
-    image: null,
-    description: "",
-    details: "",
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState("");
+
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      price: "",
+      brand: "",
+      image: null,
+      description: "",
+      details: "",
+    },
+    resolver: zodResolver(createBikeValidationSchema),
   });
+
+  const onSubmit = async (data) => {
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append("name", data.name);
+      formData.append("price", data.price);
+      formData.append("brand", data.brand);
+      formData.append("image", data.image);
+      formData.append("description", data.description);
+      formData.append("details", data.details);
+
+      const res = await axios.post("/bike", formData);
+
+      toast.success(res?.data?.message);
+
+      navigate("/manage-bikes");
+    } catch (err) {
+      setError(err?.response?.data?.error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const {
     data: userData,
     isLoading: isUserLoading,
     error: userError,
   } = useFetch("/auth/me");
-
-  const navigate = useNavigate();
-
-  const onSubmit = async (e) => {
-    try {
-      e.preventDefault();
-
-      const formData = new FormData();
-      formData.append("name", formValue.name);
-      formData.append("price", formValue.price);
-      formData.append("brand", formValue.brand);
-      formData.append("image", formValue.image);
-      formData.append("description", formValue.description);
-      formData.append("details", formValue.details);
-
-      await axios.post("/bike", formData);
-
-      toast.success("Bike created successfully!");
-
-      setFormValue({
-        name: "",
-        price: "",
-        brand: "",
-        image: null,
-        description: "",
-        details: "",
-      });
-      navigate("/manage-bikes");
-    } catch (error) {
-      console.log(error.response.data.error);
-      toast.error("All fields are required");
-    }
-  };
 
   if (isUserLoading) return <Loading />;
 
@@ -74,21 +83,21 @@ export const AddBike = () => {
       </div>
 
       <h2 className="text-3xl font-bold text-center mb-10">Add Bikes</h2>
-      <form className="space-y-4 w-200 mx-auto mb-15" onSubmit={onSubmit}>
+      <form
+        className="space-y-4 w-200 mx-auto mb-15"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="flex items-center gap-10">
           <div className="flex-1">
             <label htmlFor="name" className="text-lg block mb-1">
               Bike name
             </label>
-            <input
+            <Input
               id="name"
               type="text"
               placeholder="Enter bike name"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.name}
-              onChange={(e) =>
-                setFormValue((p) => ({ ...p, name: e.target.value }))
-              }
+              {...register("name")}
+              error={errors?.name}
             />
           </div>
 
@@ -96,15 +105,12 @@ export const AddBike = () => {
             <label htmlFor="price" className="text-lg block mb-1">
               Bike price
             </label>
-            <input
+            <Input
               id="price"
               type="text"
               placeholder="Enter bike price"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.price}
-              onChange={(e) =>
-                setFormValue((p) => ({ ...p, price: e.target.value }))
-              }
+              {...register("price")}
+              error={errors?.price}
             />
           </div>
         </div>
@@ -114,15 +120,12 @@ export const AddBike = () => {
             <label htmlFor="brand" className="text-lg block mb-1">
               Brand name
             </label>
-            <input
+            <Input
               id="brand"
               type="text"
               placeholder="Enter brand name"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.brand}
-              onChange={(e) =>
-                setFormValue((p) => ({ ...p, brand: e.target.value }))
-              }
+              {...register("brand")}
+              error={errors?.brand}
             />
           </div>
 
@@ -130,16 +133,11 @@ export const AddBike = () => {
             <label htmlFor="image" className="text-lg block mb-1">
               Bike image
             </label>
-            <input
+            <Input
               id="image"
               type="file"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              onChange={(e) =>
-                setFormValue((p) => ({
-                  ...p,
-                  image: e.target.files?.[0] || null,
-                }))
-              }
+              {...register("image")}
+              error={errors?.image}
             />
           </div>
         </div>
@@ -151,12 +149,17 @@ export const AddBike = () => {
           <textarea
             id="description"
             placeholder="Enter bike description"
-            className="w-full min-h-50 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.description}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, description: e.target.value }))
-            }
+            className={`
+              w-full min-h-40 rounded-md border px-3 py-2 focus:outline-3
+              ${errors?.description ? "border-red-600 focus:border-red-600 focus:outline-red-600/30" : "border-gray-300 focus:border-green-500 focus:outline-green-500/50"}
+            `}
+            {...register("description")}
           />
+          {errors?.description && (
+            <p className="text-base text-red-600">
+              {errors?.description?.message}
+            </p>
+          )}
         </div>
 
         <div>
@@ -166,15 +169,18 @@ export const AddBike = () => {
           <textarea
             id="details"
             placeholder="Enter bike details"
-            className="w-full min-h-50 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.details}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, details: e.target.value }))
-            }
+            className="w-full min-h-40 rounded-md border px-3 py-2 focus:outline-3 border-gray-300 focus:border-green-500 focus:outline-green-500/50"
+            {...register("details")}
           />
         </div>
 
-        <Button className="bg-green-600 hover:bg-green-700 w-full">
+        {error && <p className="mt-1 text-base text-red-600">{error}</p>}
+
+        <Button
+          className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
+          disabled={loading}
+        >
+          {loading && <ImSpinner8 className="animate-spin" />}
           Add Bike
         </Button>
       </form>
