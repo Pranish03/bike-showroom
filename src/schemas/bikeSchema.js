@@ -8,7 +8,6 @@ export const createBikeValidationSchema = z.object({
     .trim(),
   price: z.string().min(1, "Price is required").trim(),
   brand: z.string().min(2, "Brand must have atleast 2 characters").trim(),
-  image: z.url("Image must be a valid URL"),
   details: z.string().optional(),
 });
 

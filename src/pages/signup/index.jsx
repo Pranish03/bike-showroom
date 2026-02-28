@@ -39,7 +39,7 @@ export const Signup = () => {
 
       navigate("/login");
     } catch (err) {
-      setError(err?.response?.data?.error);
+      setError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

@@ -1,33 +1,35 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { IoIosArrowRoundBack } from "react-icons/io";
-import { useFetch } from "../../hooks/use-fetch";
-import { Button } from "../../components/Button";
-import { axios } from "../../lib/axios";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { ImSpinner8 } from "react-icons/im";
+import { axios } from "../../lib/axios";
+import { useFetch } from "../../hooks/use-fetch";
+import { updateBikeValidationSchema } from "../../schemas/bikeSchema";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
 import { NotAvailable } from "../../components/NotAvailable";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 
 export const EditBike = () => {
-  const [formValue, setFormValue] = useState({
-    name: "",
-    price: "",
-    brand: "",
-    image: null,
-    description: "",
-    details: "",
-  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const { id } = useParams();
-
   const {
-    data: userData,
-    isLoading: isUserLoading,
-    error: userError,
-  } = useFetch("/auth/me");
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(updateBikeValidationSchema),
+  });
+
+  const { id } = useParams();
 
   const {
     data: bikeData,
@@ -35,44 +37,48 @@ export const EditBike = () => {
     error: bikeError,
   } = useFetch(`/bike/${id}`);
 
-  const bike = bikeData?.bike;
-
   useEffect(() => {
-    if (!bike) return;
+    if (bikeData?.bike) {
+      reset({
+        name: bikeData.bike.name,
+        price: bikeData.bike.price,
+        brand: bikeData.bike.brand,
+        image: null,
+        description: bikeData.bike.description,
+        details: bikeData.bike.details,
+      });
+    }
+  }, [bikeData, reset]);
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFormValue({
-      name: bike.name,
-      price: bike.price,
-      brand: bike.brand,
-      image: null,
-      description: bike.description,
-      details: bike.details,
-    });
-  }, [bike]);
-
-  const onSubmit = async (e) => {
+  const onSubmit = async (data) => {
     try {
-      e.preventDefault();
+      setLoading(true);
 
       const formData = new FormData();
-      formData.append("name", formValue.name);
-      formData.append("price", formValue.price);
-      formData.append("brand", formValue.brand);
-      formData.append("description", formValue.description);
-      formData.append("details", formValue.details);
-      if (formValue.image) formData.append("image", formValue.image);
+      formData.append("name", data.name);
+      formData.append("price", data.price);
+      formData.append("brand", data.brand);
+      formData.append("description", data.description);
+      if (data.details) formData.append("details", data.details);
+      if (data.image) formData.append("image", data.image);
 
-      await axios.put(`/bike/${id}`, formData);
+      const res = await axios.put(`/bike/${id}`, formData);
 
-      toast.success("Bike updated successfully!");
+      toast.success(res?.data?.message);
 
       navigate("/manage-bikes");
-    } catch (error) {
-      console.log(error.response.data.error);
-      toast.error(error.response.data.error);
+    } catch (err) {
+      setError(err?.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useFetch("/auth/me");
 
   if (isUserLoading || isBikeLoading) return <Loading />;
 
@@ -82,28 +88,29 @@ export const EditBike = () => {
 
   return (
     <div className="max-w-300 mx-auto">
-      <div className="text-lg mt-10">
+      <div className="text-lg mt-10 max-w-min">
         <Link to="/manage-bikes" className="flex items-center gap-1">
           <IoIosArrowRoundBack size={30} />
           <span className="hover:underline">Back</span>
         </Link>
       </div>
+
       <h2 className="text-3xl font-bold text-center mb-10">Edit Bikes</h2>
-      <form className="space-y-4 w-200 mx-auto mb-15" onSubmit={onSubmit}>
+      <form
+        className="space-y-4 w-200 mx-auto mb-15"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div className="flex items-center gap-10">
           <div className="flex-1">
             <label htmlFor="name" className="text-lg block mb-1">
               Bike name
             </label>
-            <input
+            <Input
               id="name"
               type="text"
               placeholder="Enter bike name"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.name}
-              onChange={(e) =>
-                setFormValue((p) => ({ ...p, name: e.target.value }))
-              }
+              {...register("name")}
+              error={errors?.name}
             />
           </div>
 
@@ -111,15 +118,12 @@ export const EditBike = () => {
             <label htmlFor="price" className="text-lg block mb-1">
               Bike price
             </label>
-            <input
+            <Input
               id="price"
               type="text"
               placeholder="Enter bike price"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.price}
-              onChange={(e) =>
-                setFormValue((p) => ({ ...p, price: e.target.value }))
-              }
+              {...register("price")}
+              error={errors?.price}
             />
           </div>
         </div>
@@ -129,15 +133,12 @@ export const EditBike = () => {
             <label htmlFor="brand" className="text-lg block mb-1">
               Brand name
             </label>
-            <input
+            <Input
               id="brand"
               type="text"
               placeholder="Enter brand name"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.brand}
-              onChange={(e) =>
-                setFormValue((p) => ({ ...p, brand: e.target.value }))
-              }
+              {...register("brand")}
+              error={errors?.brand}
             />
           </div>
 
@@ -145,16 +146,11 @@ export const EditBike = () => {
             <label htmlFor="image" className="text-lg block mb-1">
               Bike image
             </label>
-            <input
+            <Input
               id="image"
               type="file"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              onChange={(e) =>
-                setFormValue((p) => ({
-                  ...p,
-                  image: e.target.files?.[0] || null,
-                }))
-              }
+              {...register("image")}
+              error={errors?.image}
             />
           </div>
         </div>
@@ -166,12 +162,17 @@ export const EditBike = () => {
           <textarea
             id="description"
             placeholder="Enter bike description"
-            className="w-full min-h-50 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.description}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, description: e.target.value }))
-            }
+            className={`
+                  w-full min-h-40 rounded-md border px-3 py-2 focus:outline-3
+                  ${errors?.description ? "border-red-600 focus:border-red-600 focus:outline-red-600/30" : "border-gray-300 focus:border-green-500 focus:outline-green-500/50"}
+                `}
+            {...register("description")}
           />
+          {errors?.description && (
+            <p className="text-base text-red-600">
+              {errors?.description?.message}
+            </p>
+          )}
         </div>
 
         <div>
@@ -181,16 +182,19 @@ export const EditBike = () => {
           <textarea
             id="details"
             placeholder="Enter bike details"
-            className="w-full min-h-50 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.details}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, details: e.target.value }))
-            }
+            className="w-full min-h-40 rounded-md border px-3 py-2 focus:outline-3 border-gray-300 focus:border-green-500 focus:outline-green-500/50"
+            {...register("details")}
           />
         </div>
 
-        <Button className="bg-green-600 hover:bg-green-700 w-full">
-          Edit Bike
+        {error && <p className="mt-1 text-base text-red-600">{error}</p>}
+
+        <Button
+          className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
+          disabled={loading}
+        >
+          {loading && <ImSpinner8 className="animate-spin" />}
+          Update Bike
         </Button>
       </form>
     </div>

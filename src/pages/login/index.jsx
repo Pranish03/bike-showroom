@@ -28,7 +28,7 @@ export const Login = () => {
 
       navigate("/");
     } catch (err) {
-      setError(err?.response?.data?.message);
+      setError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }

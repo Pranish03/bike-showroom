@@ -55,7 +55,7 @@ export const AddBike = () => {
 
       navigate("/manage-bikes");
     } catch (err) {
-      setError(err?.response?.data?.error);
+      setError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
