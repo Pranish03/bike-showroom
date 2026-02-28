@@ -1,57 +1,65 @@
 import { useState } from "react";
-import { Button } from "../../components/Button";
-import { axios } from "../../lib/axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
+import { axios } from "../../lib/axios";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
+import { contactValidationSchema } from "../../schemas/contactSchema";
+import { ImSpinner8 } from "react-icons/im";
 
 export const Contact = () => {
-  const [formValue, setFormValue] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
+    resolver: zodResolver(contactValidationSchema),
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-
-  const onSubmit = async (e) => {
+  const onSubmit = async (data) => {
     try {
-      e.preventDefault();
+      setLoading(true);
 
-      setIsLoading(true);
-      await axios.post("/contact", formValue);
-      toast.success("Thankyou for contacting!");
+      const res = await axios.post("/contact", data);
 
-      setFormValue({
-        name: "",
-        email: "",
-        subject: "",
-        message: "",
-      });
-    } catch (error) {
-      console.log(error.response.data.error);
-      toast.error("All fields are required");
+      toast.success(res?.data?.message);
+
+      reset();
+    } catch (err) {
+      setError(err?.response?.data?.error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="max-w-300 mx-auto">
       <h2 className="text-3xl font-bold text-center my-10">Contact Us</h2>
-      <form className="space-y-4 w-125 mx-auto mb-15" onSubmit={onSubmit}>
+      <form
+        className="space-y-4 w-125 mx-auto mb-15"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div>
           <label htmlFor="name" className="text-lg block mb-1">
             Name
           </label>
-          <input
+          <Input
             id="name"
             type="text"
-            placeholder="Enter your name"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.name}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, name: e.target.value }))
-            }
+            placeholder="John Doe"
+            {...register("name")}
+            error={errors?.name}
           />
         </div>
 
@@ -59,15 +67,12 @@ export const Contact = () => {
           <label htmlFor="email" className="text-lg block mb-1">
             Email
           </label>
-          <input
+          <Input
             id="email"
             type="email"
-            placeholder="Enter your email"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.email}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, email: e.target.value }))
-            }
+            placeholder="m@example.com"
+            {...register("email")}
+            error={errors?.email}
           />
         </div>
 
@@ -75,15 +80,12 @@ export const Contact = () => {
           <label htmlFor="subject" className="text-lg block mb-1">
             Subject
           </label>
-          <input
+          <Input
             id="subject"
             type="text"
             placeholder="Enter subject"
-            className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.subject}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, subject: e.target.value }))
-            }
+            {...register("subject")}
+            error={errors?.subject}
           />
         </div>
 
@@ -95,19 +97,27 @@ export const Contact = () => {
             id="message"
             type="text"
             placeholder="Enter your message"
-            className="w-full min-h-50 rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={formValue.message}
-            onChange={(e) =>
-              setFormValue((p) => ({ ...p, message: e.target.value }))
-            }
+            className={`
+              w-full min-h-40 rounded-md border px-3 py-2 focus:outline-3
+              ${errors?.message ? "border-red-600 focus:border-red-600 focus:outline-red-600/30" : "border-gray-300 focus:border-green-500 focus:outline-green-500/50"}
+            `}
+            {...register("message")}
           />
+          {errors?.message && (
+            <p className="mt-1 text-base text-red-600">
+              {errors?.message?.message}
+            </p>
+          )}
         </div>
 
+        {error && <p className="mt-1 text-base text-red-600">{error}</p>}
+
         <Button
-          className="bg-green-600 hover:bg-green-700 w-full"
-          disabled={isLoading}
+          className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
+          disabled={loading}
         >
-          {isLoading ? "Sending..." : "Send"}
+          {loading && <ImSpinner8 className="animate-spin" />}
+          Send
         </Button>
       </form>
     </div>
