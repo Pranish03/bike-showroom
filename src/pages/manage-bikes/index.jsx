@@ -26,12 +26,11 @@ export const ManageBikes = () => {
     if (!window.confirm("Are you sure you want to delete this bike?")) return;
 
     try {
-      await axios.delete(`/bike/${id}`);
-      toast.success("Bike deleted successfully");
+      const res = await axios.delete(`/bike/${id}`);
+      toast.success(res?.data?.message);
       refetchBikes();
     } catch (error) {
-      console.log(error);
-      toast.error("Delete failed");
+      toast.error(error?.response?.data?.message || "Something went wrong");
     }
   };
 
