@@ -1,16 +1,20 @@
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { Hero } from "./Hero";
 import { Card } from "../../components/Card";
-import { useFetch } from "../../hooks/use-fetch";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
+import { fetchAllBikes } from "../../api/bike";
 
 export const Home = () => {
-  const { data, isLoading, error } = useFetch("/bike");
+  const { data, isLoading, error, isError } = useQuery({
+    queryKey: ["bikes"],
+    queryFn: fetchAllBikes,
+  });
 
   if (isLoading) return <Loading />;
 
-  if (error) return <Error error={error} />;
+  if (isError) return <Error error={error} />;
 
   return (
     <main className="w-300 min-h-[calc(100dvh-365px)] mx-auto">
@@ -25,7 +29,7 @@ export const Home = () => {
           {data?.bikes.map((bike) => (
             <Link key={bike._id} to={`bike/${bike._id}`}>
               <Card
-                image={`${import.meta.env.VITE_SERVER_URL}/${bike.image}`}
+                image={bike.image}
                 desc={bike.description}
                 name={bike.name}
                 price={bike.price}

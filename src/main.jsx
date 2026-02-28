@@ -14,27 +14,38 @@ import { AddBike } from "./pages/manage-bikes/add-bike";
 import { EditBike } from "./pages/manage-bikes/edit-bike";
 import { Toaster } from "react-hot-toast";
 import { NotFound } from "./pages/not-found";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes (default is 0)
+    },
+  },
+});
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Toaster />
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="*" element={<NotFound />} />
-          <Route index element={<Home />} />
-          <Route path="/bikes" element={<Bikes />} />
-          <Route path="/manage-bikes" element={<ManageBikes />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/bike/:id" element={<Bike />} />
+    <QueryClientProvider client={queryClient}>
+      <Toaster />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<AppLayout />}>
+            <Route path="*" element={<NotFound />} />
+            <Route index element={<Home />} />
+            <Route path="/bikes" element={<Bikes />} />
+            <Route path="/manage-bikes" element={<ManageBikes />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/bike/:id" element={<Bike />} />
 
-          <Route path="/add-bike" element={<AddBike />} />
-          <Route path="/edit-bike/:id" element={<EditBike />} />
-        </Route>
+            <Route path="/add-bike" element={<AddBike />} />
+            <Route path="/edit-bike/:id" element={<EditBike />} />
+          </Route>
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </BrowserRouter>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   </StrictMode>,
 );

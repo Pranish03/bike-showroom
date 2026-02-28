@@ -24,8 +24,6 @@ export const Header = () => {
     navigate("/");
   };
 
-  console.log(data?.data);
-
   return (
     <header className="flex justify-between items-center w-300 mx-auto py-4">
       <div className="text-4xl font-bold w-43.75">
