@@ -1,36 +1,50 @@
 import { useState } from "react";
-import { Button } from "../../components/Button";
 import { Link, useNavigate } from "react-router-dom";
-import { IoIosArrowRoundBack } from "react-icons/io";
-import { axios } from "../../lib/axios";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
+import { IoIosArrowRoundBack } from "react-icons/io";
+import { ImSpinner8 } from "react-icons/im";
+import { LoginValidationSchema } from "../../schemas/authSchema";
+import { axios } from "../../lib/axios";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 
 export const Login = () => {
-  const [formValue, setFormValue] = useState({
-    email: "",
-    password: "",
-  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
-  const onSubmit = async (e) => {
+
+  const onSubmit = async (data) => {
     try {
-      e.preventDefault();
+      setLoading(true);
 
-      const formData = new FormData();
-      formData.append("email", formValue.email);
+      const res = await axios.post("/auth/login", data);
 
-      const res = await axios.post("/auth/login", formValue);
-      localStorage.setItem("auth-token", res.data.data.token);
-      toast.success("Welcome");
-      setFormValue({
-        email: "",
-        password: "",
-      });
+      localStorage.setItem("auth-token", res?.data?.data?.token);
+
+      toast.success(res?.data?.message);
+
       navigate("/");
-    } catch (error) {
-      console.log(error.response.data.error);
-      toast.error(error.response.data.error);
+    } catch (err) {
+      setError(err?.response?.data?.message);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    resolver: zodResolver(LoginValidationSchema),
+  });
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -44,22 +58,17 @@ export const Login = () => {
         <h1 className="text-4xl mb-3 font-bold text-center">Login</h1>
         <p className="text-center text-lg mb-8">Login to existing account</p>
 
-        <form className="space-y-4" onSubmit={onSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <label htmlFor="email" className="text-lg block mb-1">
               Email
             </label>
-            <input
+            <Input
+              error={errors?.email}
               id="email"
               type="email"
               placeholder="Enter your email"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.email}
-              onChange={(e) =>
-                setFormValue((prev) => {
-                  return { ...prev, email: e.target.value };
-                })
-              }
+              {...register("email")}
             />
           </div>
 
@@ -67,21 +76,22 @@ export const Login = () => {
             <label htmlFor="password" className="text-lg block mb-1">
               Password
             </label>
-            <input
+            <Input
+              error={errors?.password}
               id="password"
               type="password"
               placeholder="Enter your password"
-              className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-              value={formValue.password}
-              onChange={(e) =>
-                setFormValue((prev) => {
-                  return { ...prev, password: e.target.value };
-                })
-              }
+              {...register("password")}
             />
           </div>
 
-          <Button className="bg-green-600 hover:bg-green-700 w-full">
+          {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+
+          <Button
+            className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
+            disabled={loading}
+          >
+            {loading && <ImSpinner8 className="animate-spin" />}
             Login
           </Button>
         </form>
