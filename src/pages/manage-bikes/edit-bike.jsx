@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -18,15 +18,25 @@ export const EditBike = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(updateBikeValidationSchema),
+    defaultValues: {
+      name: "",
+      price: "",
+      brand: "",
+      image: null,
+      description: "",
+      details: "",
+    },
   });
 
   const { id } = useParams();
@@ -50,9 +60,15 @@ export const EditBike = () => {
     }
   }, [bikeData, reset]);
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setValue("image", file, { shouldValidate: true });
+  };
+
   const onSubmit = async (data) => {
     try {
       setLoading(true);
+      setError("");
 
       const formData = new FormData();
       formData.append("name", data.name);
@@ -60,12 +76,16 @@ export const EditBike = () => {
       formData.append("brand", data.brand);
       formData.append("description", data.description);
       if (data.details) formData.append("details", data.details);
-      if (data.image) formData.append("image", data.image);
+      if (data.image && data.image instanceof File)
+        formData.append("image", data.image);
 
-      const res = await axios.put(`/bike/${id}`, formData);
+      const res = await axios.put(`/bike/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       toast.success(res?.data?.message);
-
       navigate("/manage-bikes");
     } catch (err) {
       setError(err?.response?.data?.message || "Something went wrong");
@@ -99,6 +119,7 @@ export const EditBike = () => {
       <form
         className="space-y-4 w-200 mx-auto mb-15"
         onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
       >
         <div className="flex items-center gap-10">
           <div className="flex-1">
@@ -144,13 +165,14 @@ export const EditBike = () => {
 
           <div className="flex-1">
             <label htmlFor="image" className="text-lg block mb-1">
-              Bike image
+              Bike image (leave empty to keep current)
             </label>
             <Input
               id="image"
               type="file"
-              {...register("image")}
-              error={errors?.image}
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
             />
           </div>
         </div>

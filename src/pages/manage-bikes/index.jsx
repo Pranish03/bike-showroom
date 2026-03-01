@@ -68,7 +68,7 @@ export const ManageBikes = () => {
                   <td className="p-4 font-medium">{bike.name}</td>
                   <td className="p-4">
                     <img
-                      src={`${import.meta.env.VITE_SERVER_URL}/${bike.image}`}
+                      src={bike.image}
                       alt=""
                       className="w-20 h-14 object-cover rounded-md"
                     />

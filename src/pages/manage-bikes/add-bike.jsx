@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../components/Button";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import toast from "react-hot-toast";
-import { axios } from "../../lib/axios";
 import { useFetch } from "../../hooks/use-fetch";
 import { Loading } from "../../components/Loading";
 import { NotAvailable } from "../../components/NotAvailable";
@@ -13,17 +13,18 @@ import { Error } from "../../components/Error";
 import { Input } from "../../components/Input";
 import { createBikeValidationSchema } from "../../schemas/bikeSchema";
 import { ImSpinner8 } from "react-icons/im";
+import { createBike } from "../../api/bike";
 
 export const AddBike = () => {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState("");
-
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
+    reset,
   } = useForm({
     defaultValues: {
       name: "",
@@ -36,30 +37,35 @@ export const AddBike = () => {
     resolver: zodResolver(createBikeValidationSchema),
   });
 
-  const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-
-      const formData = new FormData();
-
-      formData.append("name", data.name);
-      formData.append("price", data.price);
-      formData.append("brand", data.brand);
-      formData.append("image", data.image);
-      formData.append("description", data.description);
-      formData.append("details", data.details);
-
-      const res = await axios.post("/bike", formData);
-
-      toast.success(res?.data?.message);
-
-      navigate("/manage-bikes");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setValue("image", file, { shouldValidate: true });
   };
+
+  const mutation = useMutation({
+    mutationFn: createBike,
+    onSuccess: (data) => {
+      toast.success(data?.message);
+      reset();
+      navigate("/manage-bikes");
+    },
+  });
+
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("price", data.price);
+    formData.append("brand", data.brand);
+    formData.append("image", data.image);
+    formData.append("description", data.description);
+    formData.append("details", data.details || "");
+
+    mutation.mutate(formData);
+  };
+
+  const error =
+    mutation.error?.response?.data?.message ||
+    (mutation.error ? "Something went wrong" : "");
 
   const {
     data: userData,
@@ -68,9 +74,7 @@ export const AddBike = () => {
   } = useFetch("/auth/me");
 
   if (isUserLoading) return <Loading />;
-
   if (!userData?.data?.isAdmin) return <NotAvailable />;
-
   if (userError) return <Error error={userError} />;
 
   return (
@@ -86,6 +90,7 @@ export const AddBike = () => {
       <form
         className="space-y-4 w-200 mx-auto mb-15"
         onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
       >
         <div className="flex items-center gap-10">
           <div className="flex-1">
@@ -136,7 +141,9 @@ export const AddBike = () => {
             <Input
               id="image"
               type="file"
-              {...register("image")}
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="image/*"
               error={errors?.image}
             />
           </div>
@@ -178,9 +185,9 @@ export const AddBike = () => {
 
         <Button
           className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-          disabled={loading}
+          disabled={mutation.isPending}
         >
-          {loading && <ImSpinner8 className="animate-spin" />}
+          {mutation.isPending && <ImSpinner8 className="animate-spin" />}
           Add Bike
         </Button>
       </form>
