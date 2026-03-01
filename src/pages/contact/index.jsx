@@ -27,7 +27,7 @@ export const Contact = () => {
   const mutation = useMutation({
     mutationFn: submitContactForm,
     onSuccess: (data) => {
-      toast.success(data.message);
+      toast.success(data?.message);
       reset();
     },
   });
@@ -110,9 +110,9 @@ export const Contact = () => {
 
         <Button
           className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-          disabled={mutation.isPending}
+          disabled={mutation?.isPending}
         >
-          {mutation.isPending && <ImSpinner8 className="animate-spin" />}
+          {mutation?.isPending && <ImSpinner8 className="animate-spin" />}
           Send
         </Button>
       </form>

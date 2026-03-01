@@ -30,11 +30,11 @@ export const Login = () => {
   const mutation = useMutation({
     mutationFn: login,
     onSuccess: async (data) => {
-      localStorage.setItem("auth-token", data.data.token);
+      localStorage.setItem("auth-token", data?.data?.token);
 
       await queryClient.invalidateQueries({ queryKey: ["me"] });
 
-      toast.success(data.message);
+      toast.success(data?.message);
       navigate("/");
     },
   });
@@ -88,9 +88,9 @@ export const Login = () => {
 
           <Button
             className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-            disabled={mutation.isPending}
+            disabled={mutation?.isPending}
           >
-            {mutation.isPending && <ImSpinner8 className="animate-spin" />}
+            {mutation?.isPending && <ImSpinner8 className="animate-spin" />}
             Login
           </Button>
         </form>

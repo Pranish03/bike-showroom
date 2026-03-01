@@ -40,7 +40,7 @@ export const ManageBikes = () => {
         </Link>
       </div>
 
-      {data?.bikes.length !== 0 ? (
+      {data?.bikes?.length !== 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full mb-20">
             <thead className="py-4 border-y border-black/40 font-bold">
@@ -53,7 +53,7 @@ export const ManageBikes = () => {
             </thead>
 
             <tbody>
-              {data?.bikes.map((bike, i) => (
+              {data?.bikes?.map((bike, i) => (
                 <tr key={bike._id} className="border-b border-black/40">
                   <td className="p-4">{++i}</td>
                   <td className="p-4 font-medium">{bike.name}</td>

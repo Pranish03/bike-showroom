@@ -16,7 +16,7 @@ export const Home = () => {
       <Hero />
 
       <section>
-        {data?.bikes.length !== 0 && (
+        {data?.bikes?.length !== 0 && (
           <h2 className="text-3xl font-bold mb-10">Latest bikes</h2>
         )}
 

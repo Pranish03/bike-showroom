@@ -191,17 +191,17 @@ export const EditBike = () => {
           />
         </div>
 
-        {mutation.error && (
+        {mutation?.error && (
           <p className="mt-1 text-base text-red-600">
-            {mutation.error?.response?.data?.message || "Something went wrong"}
+            {mutation?.error?.response?.data?.message || "Something went wrong"}
           </p>
         )}
 
         <Button
           className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-          disabled={mutation.isPending}
+          disabled={mutation?.isPending}
         >
-          {mutation.isPending && <ImSpinner8 className="animate-spin" />}
+          {mutation?.isPending && <ImSpinner8 className="animate-spin" />}
           Update Bike
         </Button>
       </form>

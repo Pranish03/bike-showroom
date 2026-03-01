@@ -13,7 +13,7 @@ export const Bikes = () => {
   return (
     <div className="max-w-300 min-h-[calc(100dvh-405px)] mx-auto">
       <h2 className="text-3xl font-bold text-center my-10">Bikes</h2>
-      {data?.bikes.length !== 0 ? (
+      {data?.bikes?.length !== 0 ? (
         <div className="grid grid-cols-3 gap-x-8 gap-y-12 mb-20">
           {data?.bikes?.map((bike) => (
             <Link key={bike._id} to={`/bike/${bike._id}`}>
