@@ -17,7 +17,8 @@ export const Header = () => {
     localStorage.removeItem("auth-token");
     delete axios.defaults.headers.common["Authorization"];
 
-    await queryClient.invalidateQueries({ queryKey: ["me"] });
+    queryClient.setQueryData(["me"], null);
+    queryClient.removeQueries({ queryKey: ["me"], exact: true });
 
     toast.success("Logged out successfully");
     setShowMenu(false);

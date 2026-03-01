@@ -41,7 +41,7 @@ createRoot(document.getElementById("root")).render(
               <Route path="/contact" element={<Contact />} />
               <Route path="/bike/:id" element={<Bike />} />
 
-              <Route element={<ProtectedRoutes requireAdmin="true" />}>
+              <Route element={<ProtectedRoutes requireAdmin={true} />}>
                 <Route path="/manage-bikes" element={<ManageBikes />} />
                 <Route path="/add-bike" element={<AddBike />} />
                 <Route path="/edit-bike/:id" element={<EditBike />} />

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -12,6 +12,8 @@ import { Input } from "../../components/Input";
 
 export const Login = () => {
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -27,10 +29,12 @@ export const Login = () => {
 
   const mutation = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       localStorage.setItem("auth-token", data.data.token);
-      toast.success(data.message);
 
+      await queryClient.invalidateQueries({ queryKey: ["me"] });
+
+      toast.success(data.message);
       navigate("/");
     },
   });

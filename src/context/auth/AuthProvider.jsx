@@ -6,6 +6,7 @@ export const AuthProvider = ({ children }) => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["me"],
     queryFn: fetchMe,
+    retry: false,
   });
 
   console.log(data);
@@ -15,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     isLoading,
     error,
     refetch,
-    isAuthenticated: !!data,
+    isAuthenticated: !!data?.data,
     isAdmin: data?.data?.isAdmin || false,
   };
 
