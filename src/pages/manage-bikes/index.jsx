@@ -1,28 +1,21 @@
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
-import { deleteBike, fetchAllBikes } from "../../api/bike";
+import { deleteBike } from "../../api/bike";
+import { useBikes } from "../../hooks/useBikes";
 
 export const ManageBikes = () => {
-  const {
-    data: bikeData,
-    refetch: refetchBikes,
-    isLoading: isBikeLoading,
-    error: bikeError,
-  } = useQuery({
-    queryKey: ["bike"],
-    queryFn: fetchAllBikes,
-  });
+  const { data, refetch, isLoading, error } = useBikes();
 
   const mutation = useMutation({
     mutationFn: deleteBike,
     onSuccess: (data) => {
       toast.success(data?.message);
-      refetchBikes();
+      refetch();
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Something went wrong");
@@ -34,8 +27,8 @@ export const ManageBikes = () => {
     mutation.mutate(id);
   };
 
-  if (isBikeLoading) return <Loading />;
-  if (bikeError) return <Error error={bikeError} />;
+  if (isLoading) return <Loading />;
+  if (error) return <Error error={error} />;
 
   return (
     <div className="max-w-300 min-h-[calc(100dvh-421px)] mx-auto">
@@ -46,7 +39,7 @@ export const ManageBikes = () => {
         </Link>
       </div>
 
-      {bikeData?.bikes.length !== 0 ? (
+      {data?.bikes.length !== 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full mb-20">
             <thead className="py-4 border-y border-black/40 font-bold">
@@ -59,7 +52,7 @@ export const ManageBikes = () => {
             </thead>
 
             <tbody>
-              {bikeData?.bikes.map((bike, i) => (
+              {data?.bikes.map((bike, i) => (
                 <tr key={bike._id} className="border-b border-black/40">
                   <td className="p-4">{++i}</td>
                   <td className="p-4 font-medium">{bike.name}</td>

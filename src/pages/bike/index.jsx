@@ -1,21 +1,15 @@
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "../../components/Button";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
-import { fetchBike } from "../../api/bike";
+import { useBike } from "../../hooks/useBike";
 
 export const Bike = () => {
   const { id } = useParams();
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["bike", id],
-    queryFn: () => fetchBike(id),
-    enabled: !!id,
-  });
+  const { data, isLoading, isError, error } = useBike(id);
 
   if (isLoading) return <Loading />;
-
   if (isError) return <Error error={error} />;
 
   return (

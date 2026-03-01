@@ -10,8 +10,9 @@ import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { editBike, fetchBike } from "../../api/bike";
+import { useMutation } from "@tanstack/react-query";
+import { editBike } from "../../api/bike";
+import { useBike } from "../../hooks/useBike";
 
 export const EditBike = () => {
   const fileInputRef = useRef(null);
@@ -36,16 +37,7 @@ export const EditBike = () => {
     },
   });
 
-  const {
-    data: bikeData,
-    isLoading: isBikeLoading,
-    isError: isBikeError,
-    error: bikeError,
-  } = useQuery({
-    queryKey: ["bike", id],
-    queryFn: () => fetchBike(id),
-    enabled: !!id,
-  });
+  const { data: bikeData, isLoading, isError, error: bikeError } = useBike(id);
 
   useEffect(() => {
     if (bikeData?.bike) {
@@ -86,12 +78,8 @@ export const EditBike = () => {
     mutation.mutate({ data, id });
   };
 
-  const error =
-    mutation.error?.response?.data?.message ||
-    (mutation.error ? "Something went wrong" : "");
-
-  if (isBikeLoading) return <Loading />;
-  if (isBikeError) return <Error error={bikeError} />;
+  if (isLoading) return <Loading />;
+  if (isError) return <Error error={bikeError} />;
 
   return (
     <div className="max-w-300 mx-auto">
@@ -197,7 +185,11 @@ export const EditBike = () => {
           />
         </div>
 
-        {error && <p className="mt-1 text-base text-red-600">{error}</p>}
+        {mutation.error && (
+          <p className="mt-1 text-base text-red-600">
+            {mutation.error?.response?.data?.message || "Something went wrong"}
+          </p>
+        )}
 
         <Button
           className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
