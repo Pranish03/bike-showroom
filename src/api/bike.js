@@ -27,3 +27,8 @@ export const editBike = async ({ data, id }) => {
   });
   return res.data;
 };
+
+export const deleteBike = async (id) => {
+  const res = await axios.delete(`/bike/${id}`);
+  return res.data;
+};

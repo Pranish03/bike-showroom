@@ -3,17 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "../../components/Button";
-import { IoIosArrowRoundBack } from "react-icons/io";
 import toast from "react-hot-toast";
-import { useFetch } from "../../hooks/use-fetch";
-import { Loading } from "../../components/Loading";
-import { NotAvailable } from "../../components/NotAvailable";
-import { Error } from "../../components/Error";
-import { Input } from "../../components/Input";
-import { createBikeValidationSchema } from "../../schemas/bikeSchema";
+import { IoIosArrowRoundBack } from "react-icons/io";
 import { ImSpinner8 } from "react-icons/im";
 import { createBike } from "../../api/bike";
+import { createBikeValidationSchema } from "../../schemas/bikeSchema";
+import { Button } from "../../components/Button";
+import { Input } from "../../components/Input";
 
 export const AddBike = () => {
   const fileInputRef = useRef(null);
@@ -66,16 +62,6 @@ export const AddBike = () => {
   const error =
     mutation.error?.response?.data?.message ||
     (mutation.error ? "Something went wrong" : "");
-
-  const {
-    data: userData,
-    isLoading: isUserLoading,
-    error: userError,
-  } = useFetch("/auth/me");
-
-  if (isUserLoading) return <Loading />;
-  if (!userData?.data?.isAdmin) return <NotAvailable />;
-  if (userError) return <Error error={userError} />;
 
   return (
     <div className="max-w-300 mx-auto">

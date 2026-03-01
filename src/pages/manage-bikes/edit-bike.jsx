@@ -5,11 +5,9 @@ import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { ImSpinner8 } from "react-icons/im";
-import { useFetch } from "../../hooks/use-fetch";
 import { updateBikeValidationSchema } from "../../schemas/bikeSchema";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
-import { NotAvailable } from "../../components/NotAvailable";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -92,15 +90,8 @@ export const EditBike = () => {
     mutation.error?.response?.data?.message ||
     (mutation.error ? "Something went wrong" : "");
 
-  const {
-    data: userData,
-    isLoading: isUserLoading,
-    error: userError,
-  } = useFetch("/auth/me");
-
-  if (isUserLoading || isBikeLoading) return <Loading />;
-  if (!userData?.data?.isAdmin) return <NotAvailable />;
-  if (userError || isBikeError) return <Error error={userError || bikeError} />;
+  if (isBikeLoading) return <Loading />;
+  if (isBikeError) return <Error error={bikeError} />;
 
   return (
     <div className="max-w-300 mx-auto">

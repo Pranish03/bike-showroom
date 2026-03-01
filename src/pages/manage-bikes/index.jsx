@@ -1,44 +1,41 @@
 import { Link } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
-import { useFetch } from "../../hooks/use-fetch";
-import { axios } from "../../lib/axios";
-import toast from "react-hot-toast";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
-import { NotAvailable } from "../../components/NotAvailable";
+import { deleteBike, fetchAllBikes } from "../../api/bike";
 
 export const ManageBikes = () => {
-  const {
-    data: userData,
-    isLoading: isUserLoading,
-    error: userError,
-  } = useFetch("/auth/me");
-
   const {
     data: bikeData,
     refetch: refetchBikes,
     isLoading: isBikeLoading,
     error: bikeError,
-  } = useFetch("/bike");
+  } = useQuery({
+    queryKey: ["bike"],
+    queryFn: fetchAllBikes,
+  });
+
+  const mutation = useMutation({
+    mutationFn: deleteBike,
+    onSuccess: (data) => {
+      toast.success(data?.message);
+      refetchBikes();
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "Something went wrong");
+    },
+  });
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this bike?")) return;
-
-    try {
-      const res = await axios.delete(`/bike/${id}`);
-      toast.success(res?.data?.message);
-      refetchBikes();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Something went wrong");
-    }
+    mutation.mutate(id);
   };
 
-  if (isUserLoading || isBikeLoading) return <Loading />;
-
-  if (!userData?.data?.isAdmin) return <NotAvailable />;
-
-  if (userError || bikeError) return <Error error={userError || bikeError} />;
+  if (isBikeLoading) return <Loading />;
+  if (bikeError) return <Error error={bikeError} />;
 
   return (
     <div className="max-w-300 min-h-[calc(100dvh-421px)] mx-auto">
