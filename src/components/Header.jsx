@@ -61,19 +61,26 @@ export const Header = () => {
             </div>
 
             {showMenu && (
-              <div className="absolute top-8 right-0 p-1.5 bg-white rounded-xl border border-gray-100 shadow-md">
-                <div className="flex justify-center mt-2 mb-1">
-                  <div className="size-10 rounded-full flex justify-center items-center bg-black/10 text-black/60">
-                    <FiUser size={24} />
+              <div className="absolute top-8 right-0 bg-white rounded-xl border border-gray-200 shadow-md">
+                <div className="pt-1 px-1">
+                  <div className="block min-w-max text-left hover:bg-gray-500/5 rounded-md py-1 px-2 cursor-default">
+                    {user?.data?.email}
+                  </div>
+                  <div className="text-left hover:bg-gray-500/5 rounded-md py-1 px-2 cursor-default">
+                    <span>Role - </span>{" "}
+                    {user?.data?.isAdmin ? "admin" : "user"}
                   </div>
                 </div>
-                <div className="block min-w-max text-left mb-3 px-3">
-                  {user?.data?.email}
-                </div>
-                <div onClick={handleLogout}>
-                  <Button className="bg-green-600 hover:bg-green-700 w-full">
+
+                <div className="w-full h-px bg-gray-200 my-1" />
+
+                <div className="pb-1 px-1">
+                  <button
+                    className="hover:bg-red-600/10 text-left text-red-600 w-full py-1 px-2 rounded-md cursor-pointer"
+                    onClick={handleLogout}
+                  >
                     Logout
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}
