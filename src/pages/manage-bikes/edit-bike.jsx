@@ -1,11 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { ImSpinner8 } from "react-icons/im";
-import { axios } from "../../lib/axios";
 import { useFetch } from "../../hooks/use-fetch";
 import { updateBikeValidationSchema } from "../../schemas/bikeSchema";
 import { Loading } from "../../components/Loading";
@@ -13,13 +12,13 @@ import { Error } from "../../components/Error";
 import { NotAvailable } from "../../components/NotAvailable";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { editBike, fetchBike } from "../../api/bike";
 
 export const EditBike = () => {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const {
     register,
@@ -39,13 +38,16 @@ export const EditBike = () => {
     },
   });
 
-  const { id } = useParams();
-
   const {
     data: bikeData,
     isLoading: isBikeLoading,
+    isError: isBikeError,
     error: bikeError,
-  } = useFetch(`/bike/${id}`);
+  } = useQuery({
+    queryKey: ["bike", id],
+    queryFn: () => fetchBike(id),
+    enabled: !!id,
+  });
 
   useEffect(() => {
     if (bikeData?.bike) {
@@ -65,34 +67,30 @@ export const EditBike = () => {
     setValue("image", file, { shouldValidate: true });
   };
 
-  const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-      setError("");
-
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("price", data.price);
-      formData.append("brand", data.brand);
-      formData.append("description", data.description);
-      if (data.details) formData.append("details", data.details);
-      if (data.image && data.image instanceof File)
-        formData.append("image", data.image);
-
-      const res = await axios.put(`/bike/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      toast.success(res?.data?.message);
+  const mutation = useMutation({
+    mutationFn: editBike,
+    onSuccess: (data) => {
+      toast.success(data?.message);
       navigate("/manage-bikes");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("price", data.price);
+    formData.append("brand", data.brand);
+    formData.append("description", data.description);
+    if (data.details) formData.append("details", data.details);
+    if (data.image && data.image instanceof File)
+      formData.append("image", data.image);
+
+    mutation.mutate({ data, id });
   };
+
+  const error =
+    mutation.error?.response?.data?.message ||
+    (mutation.error ? "Something went wrong" : "");
 
   const {
     data: userData,
@@ -101,10 +99,8 @@ export const EditBike = () => {
   } = useFetch("/auth/me");
 
   if (isUserLoading || isBikeLoading) return <Loading />;
-
   if (!userData?.data?.isAdmin) return <NotAvailable />;
-
-  if (userError || bikeError) return <Error error={userError || bikeError} />;
+  if (userError || isBikeError) return <Error error={userError || bikeError} />;
 
   return (
     <div className="max-w-300 mx-auto">
@@ -173,6 +169,7 @@ export const EditBike = () => {
               ref={fileInputRef}
               onChange={handleFileChange}
               accept="image/*"
+              error={errors?.image}
             />
           </div>
         </div>
@@ -213,9 +210,9 @@ export const EditBike = () => {
 
         <Button
           className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-          disabled={loading}
+          disabled={mutation.isPending}
         >
-          {loading && <ImSpinner8 className="animate-spin" />}
+          {mutation.isPending && <ImSpinner8 className="animate-spin" />}
           Update Bike
         </Button>
       </form>

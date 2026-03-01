@@ -18,3 +18,12 @@ export const createBike = async (data) => {
   });
   return res.data;
 };
+
+export const editBike = async ({ data, id }) => {
+  const res = await axios.put(`/bike/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return res.data;
+};
