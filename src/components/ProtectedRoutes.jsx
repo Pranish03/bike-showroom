@@ -1,20 +1,14 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { fetchMe } from "../api/auth";
 import { Loading } from "./Loading";
 import { NotAvailable } from "./NotAvailable";
+import { useAuth } from "../hooks/useAuth";
 
-export const ProtectedRoutes = ({ isAdmin = false }) => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["me"],
-    queryFn: fetchMe,
-  });
-
-  console.log(data);
+export const ProtectedRoutes = ({ requireAdmin = false }) => {
+  const { isLoading, isAuthenticated, isAdmin } = useAuth();
 
   if (isLoading) return <Loading />;
-  if (error) return <Navigate to="/login" />;
-  if (isAdmin && !data?.data?.isAdmin) return <NotAvailable />;
+  if (!isAuthenticated) return <Navigate to="/login" />;
+  if (requireAdmin && !isAdmin) return <NotAvailable />;
 
   return <Outlet />;
 };

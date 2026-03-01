@@ -1,28 +1,39 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiChevronDown, FiChevronUp, FiUser } from "react-icons/fi";
+import { FiChevronDown, FiUser } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { axios } from "../lib/axios";
 import { Button } from "./Button";
-import { useFetch } from "../hooks/use-fetch";
+import { useAuth } from "../hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const Header = () => {
   const [showMenu, setShowMenu] = useState(false);
-
-  const { data, refetch } = useFetch("/auth/me");
-
   const navigate = useNavigate();
-
-  const isAdmin = data?.data?.isAdmin;
+  const { user, isAuthenticated, isAdmin, isLoading } = useAuth();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     localStorage.removeItem("auth-token");
-
     delete axios.defaults.headers.common["Authorization"];
+
+    await queryClient.invalidateQueries({ queryKey: ["me"] });
+
     toast.success("Logged out successfully");
-    await refetch();
+    setShowMenu(false);
     navigate("/");
   };
+
+  if (isLoading) {
+    return (
+      <header className="flex justify-between items-center w-300 mx-auto py-4">
+        <div className="text-4xl font-bold w-43.75">
+          <Link to="/">BIKE</Link>
+        </div>
+        <div>Loading...</div>
+      </header>
+    );
+  }
 
   return (
     <header className="flex justify-between items-center w-300 mx-auto py-4">
@@ -37,18 +48,15 @@ export const Header = () => {
       </nav>
 
       <div className="text-lg">
-        {data?.data ? (
+        {isAuthenticated ? (
           <div className="relative flex justify-end text-right w-41.75">
             <div
               onClick={() => setShowMenu(!showMenu)}
               className="cursor-pointer max-w-min flex items-center gap-2 truncate"
             >
-              {data?.data?.name}
-              {showMenu ? (
-                <FiChevronUp size={21} />
-              ) : (
-                <FiChevronDown size={21} />
-              )}
+              {user?.data?.name}
+
+              <FiChevronDown size={21} />
             </div>
 
             {showMenu && (
@@ -59,7 +67,7 @@ export const Header = () => {
                   </div>
                 </div>
                 <div className="block min-w-max text-left mb-3 px-3">
-                  {data?.data?.email}
+                  {user?.data?.email}
                 </div>
                 <div onClick={handleLogout}>
                   <Button className="bg-green-600 hover:bg-green-700 w-full">

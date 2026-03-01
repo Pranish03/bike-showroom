@@ -1,16 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchMe } from "../api/auth";
 import { Loading } from "./Loading";
 import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export const GuestRoutes = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["me"],
-    queryFn: fetchMe,
-  });
+  const { isLoading, isAuthenticated } = useAuth();
 
   if (isLoading) return <Loading />;
-  if (data) return <Navigate to="/" replace />;
+  if (isAuthenticated) return <Navigate to="/" replace />;
 
   return <Outlet />;
 };
