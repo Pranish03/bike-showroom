@@ -1,38 +1,17 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { ImSpinner8 } from "react-icons/im";
 import { LoginValidationSchema } from "../../schemas/authSchema";
-import { axios } from "../../lib/axios";
+import { login } from "../../api/auth";
 import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
 
 export const Login = () => {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-
-  const onSubmit = async (data) => {
-    try {
-      setLoading(true);
-
-      const res = await axios.post("/auth/login", data);
-
-      localStorage.setItem("auth-token", res?.data?.data?.token);
-
-      toast.success(res?.data?.message);
-
-      navigate("/");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const {
     register,
@@ -45,6 +24,23 @@ export const Login = () => {
     },
     resolver: zodResolver(LoginValidationSchema),
   });
+
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      localStorage.setItem("auth-token", data.data.token);
+      toast.success(data.message);
+
+      navigate("/");
+    },
+  });
+
+  const onSubmit = (data) => mutation.mutate(data);
+
+  const error =
+    mutation.error?.response?.data?.message || mutation.error
+      ? "Something went wrong"
+      : "";
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -88,9 +84,9 @@ export const Login = () => {
 
           <Button
             className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600 w-full flex items-center justify-center gap-2"
-            disabled={loading}
+            disabled={mutation.isPending}
           >
-            {loading && <ImSpinner8 className="animate-spin" />}
+            {mutation.isPending && <ImSpinner8 className="animate-spin" />}
             Login
           </Button>
         </form>

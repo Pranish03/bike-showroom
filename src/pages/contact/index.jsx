@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,8 +9,6 @@ import { ImSpinner8 } from "react-icons/im";
 import { submitContactForm } from "../../api/contact";
 
 export const Contact = () => {
-  const [error, setError] = useState("");
-
   const {
     register,
     handleSubmit,
@@ -32,14 +29,15 @@ export const Contact = () => {
     onSuccess: (data) => {
       toast.success(data.message);
       reset();
-      setError("");
-    },
-    onError: (err) => {
-      setError(err?.response?.data?.error || "Something went wrong");
     },
   });
 
   const onSubmit = (data) => mutation.mutate(data);
+
+  const error =
+    mutation.error?.response?.data?.error || mutation.error
+      ? "Something went wrong"
+      : "";
 
   return (
     <div className="max-w-300 mx-auto">
