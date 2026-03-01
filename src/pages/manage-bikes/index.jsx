@@ -1,21 +1,22 @@
 import { Link } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { Button } from "../../components/Button";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
+import { useBikes } from "../../hooks/useBikes";
+import { deleteBike } from "../../api/bike";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
-import { deleteBike } from "../../api/bike";
-import { useBikes } from "../../hooks/useBikes";
+import { Button } from "../../components/Button";
 
 export const ManageBikes = () => {
-  const { data, refetch, isLoading, error } = useBikes();
+  const { data, isLoading, error } = useBikes();
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: deleteBike,
     onSuccess: (data) => {
       toast.success(data?.message);
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ["bikes"] });
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "Something went wrong");

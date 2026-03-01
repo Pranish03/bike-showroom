@@ -1,23 +1,24 @@
 import { useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import toast from "react-hot-toast";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { ImSpinner8 } from "react-icons/im";
+import { useBike } from "../../hooks/useBike";
+import { editBike } from "../../api/bike";
 import { updateBikeValidationSchema } from "../../schemas/bikeSchema";
 import { Loading } from "../../components/Loading";
 import { Error } from "../../components/Error";
-import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
-import { useMutation } from "@tanstack/react-query";
-import { editBike } from "../../api/bike";
-import { useBike } from "../../hooks/useBike";
+import { Button } from "../../components/Button";
 
 export const EditBike = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const { id } = useParams();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -61,6 +62,11 @@ export const EditBike = () => {
     mutationFn: editBike,
     onSuccess: (data) => {
       toast.success(data?.message);
+
+      queryClient.invalidateQueries({ queryKey: ["bikes"] });
+
+      queryClient.invalidateQueries({ queryKey: ["bike", id] });
+
       navigate("/manage-bikes");
     },
   });

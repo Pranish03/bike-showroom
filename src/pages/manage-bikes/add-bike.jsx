@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
@@ -8,12 +8,13 @@ import { IoIosArrowRoundBack } from "react-icons/io";
 import { ImSpinner8 } from "react-icons/im";
 import { createBike } from "../../api/bike";
 import { createBikeValidationSchema } from "../../schemas/bikeSchema";
-import { Button } from "../../components/Button";
 import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
 
 export const AddBike = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -42,6 +43,9 @@ export const AddBike = () => {
     mutationFn: createBike,
     onSuccess: (data) => {
       toast.success(data?.message);
+
+      queryClient.invalidateQueries({ queryKey: ["bikes"] });
+
       reset();
       navigate("/manage-bikes");
     },
