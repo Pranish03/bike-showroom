@@ -81,7 +81,7 @@ export const EditBike = () => {
     if (data.image && data.image instanceof File)
       formData.append("image", data.image);
 
-    mutation.mutate({ data, id });
+    mutation.mutate({ data: formData, id });
   };
 
   if (isLoading) return <Loading />;

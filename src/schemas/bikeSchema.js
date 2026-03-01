@@ -13,4 +13,19 @@ export const createBikeValidationSchema = z.object({
   details: z.string().optional(),
 });
 
-export const updateBikeValidationSchema = createBikeValidationSchema.partial();
+export const updateBikeValidationSchema = z.object({
+  name: z.string().min(2, "Name must have atleast 2 characters").optional(),
+  price: z.string().min(1, "Price is required").optional(),
+  brand: z.string().min(2, "Brand must have atleast 2 characters").optional(),
+  image: z
+    .any()
+    .optional()
+    .refine((file) => !file || file instanceof File, {
+      message: "Invalid image file",
+    }),
+  description: z
+    .string()
+    .min(10, "Description must have atleast 10 characters")
+    .optional(),
+  details: z.string().optional(),
+});
